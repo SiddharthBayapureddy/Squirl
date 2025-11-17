@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Squirl — Shorten links & QR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0b1736;--card:#0f2a46;--soft:#f6f7fb;--accent:#ff7a00;--muted:#9fb0c8;}
+    *{box-sizing:border-box;font-family:Inter, sans-serif}
+    body{margin:0;background:linear-gradient(180deg,var(--bg) 0%, #071026 100%);color:var(--soft);min-height:100vh;display:flex;flex-direction:column}
+    
+    /* HEADER & GITHUB LINK */
+    header{
+        padding: 30px 40px;
+        display: flex;
+        justify-content: center; 
+        align-items: center;
+        position: relative;
+    }
+    .logo{
+        font-weight:800;
+        color:var(--accent);
+        font-size:48px; 
+        letter-spacing:-1px;
+        text-align:center;
+        width:100%;
+    }
+    .github-link{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: color 0.2s;
+        position: absolute;
+        right: 40px;
+    }
+    .github-link:hover{ color: white; }
+    .github-icon{ width: 24px; height: 24px; fill: currentColor; }
+
+    .hero{flex:1;max-width:800px;margin:0 auto;padding:20px;width:100%}
+    .hero h1{font-size:38px;text-align:center;margin-bottom:10px;line-height:1.1}
+    .hero p{text-align:center;color:var(--muted);margin-bottom:40px}
+
+    .card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+          border-radius:20px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,0.4);position:relative}
+
+    .tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:15px}
+    .tab{cursor:pointer;padding:8px 16px;border-radius:8px;font-weight:600;color:var(--muted);transition:0.2s}
+    .tab:hover{color:var(--soft)}
+    .tab.active{background:var(--accent);color:white;box-shadow:0 4px 12px rgba(255, 122, 0, 0.3)}
+
+    .input-group{display:flex;gap:10px}
+    input{flex:1;padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);
+          background:rgba(0,0,0,0.2);color:white;font-size:16px;outline:none}
+    input:focus{border-color:var(--accent)}
+    button.primary{padding:16px 24px;border-radius:12px;border:none;background:white;
+                   color:var(--bg);font-weight:700;font-size:16px;cursor:pointer;transition:0.2s}
+    button.primary:hover{background:var(--soft);transform:translateY(-2px)}
+
+    #resultArea{margin-top:24px;display:none;animation:fadeIn 0.3s ease}
+    .result-box{background:white;border-radius:12px;padding:20px;color:var(--bg);display:flex;align-items:center;gap:20px}
+    
+    .link-content{flex:1;display:none}
+    .short-link{font-size:18px;font-weight:700;color:var(--accent);text-decoration:none}
+    .long-link{font-size:13px;color:#666;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px}
+    
+    .qr-content{flex:1;display:none;flex-direction:column;align-items:center;text-align:center}
+    
+    .qr-img-box{
+        width: 260px;
+        height: 260px;
+        margin-bottom: 15px;
+    }
+    .qr-img-box img{width:100%; border-radius:8px;}
+
+    @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    
+    @media(max-width:600px){
+        header{ padding: 20px; }
+        .input-group{flex-direction:column}
+        .result-box{flex-direction:column;text-align:center}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Squirl🔗</div>
+  
+  <a href="https://github.com/SiddharthBayapureddy/Squirl" target="_blank" class="github-link">
+    <svg class="github-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405 1.02 0 2.04.135 3 .405 2.28-1.56 3.285-1.23 3.285-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.285 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    GitHub
+  </a>
+</header>
+
+<main class="hero">
+  <h1>Shorten links or generate QR codes in one click.</h1>
+  <p>Built by Siddharth Bayapureddy</p>
+
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" onclick="setMode('shortenurl')" id="tab-shortenurl">🔗 Short Link</div>
+      <div class="tab" onclick="setMode('qr')" id="tab-qr">📱 QR Code</div>
+    </div>
+
+    <form onsubmit="handleSubmit(event)">
+      <div class="input-group">
+        <input type="text" id="urlInput" placeholder="Paste a long URL here..." required>
+        <button type="submit" class="primary" id="actionBtn">Shorten URL</button>
+      </div>
+    </form>
+
+    <div id="resultArea">
+      <div class="result-box">
+        <div class="link-content" id="linkResult">
+            <div>
+                <a href="#" target="_blank" class="short-link" id="finalLink"></a>
+                <div class="long-link" id="originalLink"></div>
+            </div>
+            <button class="primary" style="background:var(--bg);color:white;padding:10px 20px" onclick="copyLink()">Copy</button>
+        </div>
+
+        <div class="qr-content" id="qrResult">
+            <div class="qr-img-box" id="qrImageContainer"></div>
+            <div style="font-size:14px;font-weight:600">Scan me</div>
+            <a id="downloadLink" href="#" download="squirl-qr.png" style="color:var(--accent);font-size:13px;margin-top:5px">Download PNG</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  let currentMode = 'shortenurl';
+
+  function setMode(mode){
+    currentMode = mode;
+    document.getElementById('tab-shortenurl').className = mode === 'shortenurl' ? 'tab active' : 'tab';
+    document.getElementById('tab-qr').className = mode === 'qr' ? 'tab active' : 'tab';
+    
+    const btn = document.getElementById('actionBtn');
+    btn.textContent = mode === 'shortenurl' ? 'Shorten URL' : 'Generate QR Code';
+    
+    document.getElementById('resultArea').style.display = 'none';
+  }
+
+  async function handleSubmit(e){
+    e.preventDefault();
+    const url = document.getElementById('urlInput').value.trim();
+    if(!url) return;
+
+    const btn = document.getElementById('actionBtn');
+    const originalText = btn.textContent;
+    btn.textContent = "Processing...";
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/process', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ url: url, action: currentMode })
+      });
+      
+      const data = await res.json();
+      
+      if(data.error) {
+        alert(data.error);
+      } else {
+        showResult(data);
+      }
+
+    } catch(err) {
+      alert("Network error, please try again.");
+    }
+
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+
+  function showResult(data){
+    const resultArea = document.getElementById('resultArea');
+    const linkBox = document.getElementById('linkResult');
+    const qrBox = document.getElementById('qrResult');
+    
+    resultArea.style.display = 'block';
+
+    if(data.type === 'shortenurl'){
+        linkBox.style.display = 'flex';
+        qrBox.style.display = 'none';
+        
+        document.getElementById('finalLink').textContent = data.short_url;
+        document.getElementById('finalLink').href = data.short_url;
+        document.getElementById('originalLink').textContent = document.getElementById('urlInput').value;
+    } else {
+        linkBox.style.display = 'none';
+        qrBox.style.display = 'flex';
+
+        const img = new Image();
+        img.src = data.qr_image;
+        document.getElementById('qrImageContainer').innerHTML = '';
+        document.getElementById('qrImageContainer').appendChild(img);
+        document.getElementById('downloadLink').href = data.qr_image;
+    }
+  }
+
+  function copyLink(){
+    const link = document.getElementById('finalLink').href;
+    navigator.clipboard.writeText(link);
+    alert("Copied to clipboard!");
+  }
+</script>
+</body>
+</html>
