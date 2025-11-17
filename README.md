@@ -3,7 +3,7 @@
 #### Checkout the website
 #### https://squirl.vercel.app/
 
-![Website](image.png)
+![Website](modules/image.png)
 
 ### A simple, fast URL shortener and QR code generator.
 
