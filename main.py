@@ -1,6 +1,6 @@
 # Importing custom modules
-from qr_generator import qr
-from url_shortener import shorten
+from modules.qr_generator import qr
+from modules.url_shortener import shorten
 
 # Flask and utilities
 from flask import Flask , render_template , request,jsonify

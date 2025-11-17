@@ -1,5 +1,10 @@
 # Squirl 🐿️
 
+#### Checkout the website
+#### https://squirl.vercel.app/
+
+![Website](image.png)
+
 ### A simple, fast URL shortener and QR code generator.
 
 ## Squirl is a lightweight web app built with Python (Flask) along with HTML to provide a clean UI to:
