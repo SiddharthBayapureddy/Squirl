@@ -1,10 +1,10 @@
 import qrcode # Python QR Code Generator
 
 # Creating an instance
-qr_gen = qrcode.QRCode(box_size=10, border=4)
 
 # Function
 def qr(url : str):
+    qr_gen = qrcode.QRCode(box_size=10, border=4)
     qr_gen.add_data(url)
     qr_gen.make(fit=True)
     img = qr_gen.make_image()
