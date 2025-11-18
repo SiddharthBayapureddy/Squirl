@@ -58,16 +58,43 @@
     input{flex:1;padding:16px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);
           background:rgba(0,0,0,0.2);color:white;font-size:16px;outline:none}
     input:focus{border-color:var(--accent)}
+    
+    /* Primary Button */
     button.primary{padding:16px 24px;border-radius:12px;border:none;background:white;
                    color:var(--bg);font-weight:700;font-size:16px;cursor:pointer;transition:0.2s}
     button.primary:hover{background:var(--soft);transform:translateY(-2px)}
-    /* clear button style to match UI */
+    
+    /* Clear Button */
     button.btn-clear{
       padding:14px 18px;border-radius:12px;border:1px solid rgba(255,255,255,0.06);
       background:rgba(255,255,255,0.02); color:var(--muted); font-weight:700; cursor:pointer;
       font-size:15px;
     }
     button.btn-clear:hover{ color:var(--soft); transform:translateY(-2px); border-color: rgba(255,255,255,0.12); }
+
+    /* Copy Button Styles */
+    .btn-copy {
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: none;
+        background: var(--bg); /* Dark Blue background */
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .btn-copy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    /* COPIED STATE (Grey) */
+    .btn-copy.copied {
+        background: var(--muted); 
+        color: #fff;
+        transform: none;
+        cursor: default;
+        box-shadow: none;
+    }
 
     #resultArea{margin-top:24px;display:none;animation:fadeIn 0.3s ease}
     .result-box{background:white;border-radius:12px;padding:20px;color:var(--bg);display:flex;align-items:center;gap:20px}
@@ -120,7 +147,6 @@
       <div class="input-group">
         <input type="text" id="urlInput" placeholder="Paste a long URL here..." required>
         <button type="submit" class="primary" id="actionBtn">Shorten URL</button>
-        <!-- Clear button placed next to primary -->
         <button type="button" class="btn-clear" id="clearBtn" onclick="clearInput()">Clear</button>
       </div>
     </form>
@@ -132,7 +158,7 @@
                 <a href="#" target="_blank" class="short-link" id="finalLink"></a>
                 <div class="long-link" id="originalLink"></div>
             </div>
-            <button class="primary" style="background:var(--bg);color:white;padding:10px 20px" onclick="copyLink()">Copy</button>
+            <button class="btn-copy" id="copyBtn" onclick="copyLink()">Copy</button>
         </div>
 
         <div class="qr-content" id="qrResult">
@@ -194,7 +220,6 @@
       btn.textContent = originalText;
       btn.disabled = false;
     } else {
-      // if cleared while processing, ensure the main button is in the correct state
       btn.textContent = currentMode === 'shortenurl' ? 'Shorten URL' : 'Generate QR Code';
       btn.disabled = false;
     }
@@ -205,6 +230,11 @@
     const linkBox = document.getElementById('linkResult');
     const qrBox = document.getElementById('qrResult');
     
+    // Reset copy button if it was in "copied" state from previous run
+    const copyBtn = document.getElementById('copyBtn');
+    copyBtn.textContent = "Copy";
+    copyBtn.className = "btn-copy"; // remove .copied class
+
     resultArea.style.display = 'block';
 
     if(data.type === 'shortenurl'){
@@ -228,18 +258,30 @@
 
   function copyLink(){
     const link = document.getElementById('finalLink').href;
-    navigator.clipboard.writeText(link);
-    alert("Copied to clipboard!");
+    const btn = document.getElementById('copyBtn');
+
+    navigator.clipboard.writeText(link).then(() => {
+        // Visual feedback
+        btn.textContent = "Copied!";
+        btn.classList.add('copied');
+
+        // Revert after 2 seconds
+        setTimeout(() => {
+            btn.textContent = "Copy";
+            btn.classList.remove('copied');
+        }, 2000);
+
+    }).catch(err => {
+        console.error('Failed to copy text: ', err);
+    });
   }
 
-  // --- Clear button behaviour ---
   function clearInput(){
     const urlInputEl = document.getElementById('urlInput');
     urlInputEl.value = '';
     urlInputEl.focus();
     document.getElementById('resultArea').style.display = 'none';
 
-    // reset action button text & state
     const btn = document.getElementById('actionBtn');
     btn.disabled = false;
     btn.textContent = currentMode === 'shortenurl' ? 'Shorten URL' : 'Generate QR Code';
