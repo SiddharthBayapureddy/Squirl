@@ -4,6 +4,14 @@ from urllib.parse import quote_plus # Used to parse URL and clean it
 # is.gd API call
 is_gd_path = "https://is.gd/create.php?format=simple&url="
 
+# tinyurl API call
+tinyutl_path = "https://tinyurl.com/api-create.php?url="
+
+# Pretending to be a browser
+headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
+}
+
 def shorten(url: str):
 
     ## Checking if url is valid
@@ -16,8 +24,9 @@ def shorten(url: str):
 
 
     # Shortening it
-    api_call = f"{is_gd_path}{url}"
-    request = requests.get(api_call , timeout=5)  # If no response within 5sec, throws an error
+    safe_url = quote_plus(url)
+    api_call = f"{is_gd_path}{safe_url}"
+    request = requests.get(api_call ,headers=headers , timeout=5)  # If no response within 5sec, throws an error
     request.raise_for_status()
     
     # Returning the shortened url
